@@ -1,4 +1,3 @@
-use std::any::Any;
 use std::collections::{HashMap, HashSet};
 use ecs::entity::*;
 
@@ -9,27 +8,34 @@ pub trait AssociatesEntities {
     fn remove_entity(&mut self, entity: &Entity) -> bool;
 }
 
-pub trait CanBeAny {
-    fn as_any(&self) -> &Any;
+pub trait IsSystem<C> {
+    fn add_entity(&mut self, entity: &Entity, component: C) -> bool;
+
+    fn has_component(&self, entity: &Entity) -> bool;
+
+    fn get_component(&self, entity: &Entity) -> Option<&C>;
 }
 
 pub struct System<C> {
     entities: HashSet<Entity, EntityHashState>,
     map: HashMap<Entity, C, EntityHashState>
 }
-impl <C> System<C> {
+
+impl<C> System<C> {
     pub fn new() -> System<C> {
         System {
             map: HashMap::with_hasher(EntityHashState),
             entities: HashSet::with_hasher(EntityHashState)
         }
     }
+}
 
-    pub fn has_component(&self, entity: &Entity) -> bool {
+impl<C> IsSystem<C> for System<C> {
+    fn has_component(&self, entity: &Entity) -> bool {
         self.map.contains_key(entity)
     }
 
-    pub fn add_entity(&mut self, entity: &Entity, component: C) -> bool {
+    fn add_entity(&mut self, entity: &Entity, component: C) -> bool {
         if self.map.contains_key(entity) {
             false
         } else {
@@ -39,10 +45,11 @@ impl <C> System<C> {
         }
     }
 
-    pub fn get_component(&self, entity: &Entity) -> Option<&C> {
+    fn get_component(&self, entity: &Entity) -> Option<&C> {
         self.map.get(entity)
     }
 }
+
 impl<C> AssociatesEntities for System<C> {
     fn has_entity(&self, entity: &Entity) -> bool {
         self.entities.contains(entity)
@@ -55,7 +62,4 @@ impl<C> AssociatesEntities for System<C> {
             true
         } else { false }
     }
-}
-impl<C> CanBeAny for System<C> where C : 'static {
-    fn as_any(&self) -> &Any { self }
 }

@@ -15,8 +15,13 @@ macro_rules! create_container {
     }
 
     impl<F: CreatesEntities> EcsContainer<F> {
-        pub fn new_entity(&mut self) -> Entity {
-            self.entity_factory.new_entity()
+        pub fn new_entity(&mut self) -> EntityConfiguration<Self> {
+            let entity = self.entity_factory.new_entity();
+            self.configure_entity(entity)
+        }
+
+        pub fn configure_entity(&mut self, entity: Entity) -> EntityConfiguration<Self> {
+            EntityConfiguration::new(self, entity)
         }
     }
 
@@ -46,17 +51,7 @@ macro_rules! create_container {
                 &mut ecs.$sys_id
             }
         }
-    )+
-
-    pub struct EntityConfiguration {
-        entity: Entity
-    }
-
-    impl EntityConfiguration {
-        pub fn new(entity: Entity) -> EntityConfiguration {
-            EntityConfiguration { entity: entity }
-        }
-    })
+    )+)
 }
 
 create_container!(
@@ -74,11 +69,12 @@ fn main() {
      };
 
     // Create entity, system and ECS container
-    let geralt = container.new_entity();
+    let geralt: Entity = container.new_entity().into();
 
     // Association component with entity in system
     // container.get_system_mut().add_entity(&geralt, HasName::new("Geralt"));
     container.get_system_mut::<System<HasName>>().add_entity(&geralt, HasName::new("Geralt"));
+    container.get_system_mut::<System<HasHealth>>().add_entity(&geralt, HasHealth::new(100));
 
     // Print Geralt's ID.
     println!("Geralt ID: {:?}", geralt.get_id());
