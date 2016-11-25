@@ -5,14 +5,34 @@ create_container(
         has_health_key => has_health,
     }
 )
+
+
 */
 
-#[macro_export]
+pub trait FromEcs<'a, E: ContainsSystem> where Self: Sized {
+    fn from_ecs(ecs: &'a E) -> &'a Self;
+}
+
+pub trait FromEcsMut<'a, E: ContainsMutSystem>: FromEcs<'a, E> {
+    fn from_ecs_mut(ecs: &'a mut E) -> &'a mut Self;
+}
+
+pub trait ContainsSystem where Self: Sized {
+    fn get_system<'a, S>(&'a self) -> &'a S
+        where S: FromEcs<'a, Self>;
+}
+
+pub trait ContainsMutSystem: ContainsSystem {
+    fn get_system_mut<'a, S>(&'a mut self) -> &'a mut S
+        where S: FromEcsMut<'a, Self>;
+}
+
+
+// #[macro_export]
 macro_rules! create_container {
     (with_systems {
         $($sys_id:ident => $sys_type:ty),+
     }) => (
-    // let mut __identifier = 444usize;
 
     pub struct EcsContainer<F : CreatesEntities> {
         entity_factory: F,
@@ -39,5 +59,15 @@ macro_rules! create_container {
                 &mut self.$sys_id
             }
         }
-    )+)
+    )+
+
+    pub struct EntityConfiguration {
+        entity: Entity,
+    }
+
+    impl EntityConfiguration {
+        pub fn new(entity: Entity) -> EntityConfiguration {
+            EntityConfiguration { entity: entity }
+        }
+    })
 }
