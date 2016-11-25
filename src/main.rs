@@ -26,28 +26,28 @@ macro_rules! create_container {
     }
 
     impl<F: CreatesEntities> ContainsSystem for EcsContainer<F> {
-        fn get_system<'a, S>(&'a self) -> &'a S
-            where S: FromEcs<'a, Self> {
+        fn get_system<S>(&self) -> &S
+            where S: FromEcs<Self> {
                 FromEcs::from_ecs(self)
             }
     }
 
     impl<F : CreatesEntities> ContainsMutSystem for EcsContainer<F> {
-        fn get_system_mut<'a, S>(&'a mut self) -> &'a mut S
-            where S: FromEcsMut<'a, Self> {
+        fn get_system_mut<S>(&mut self) -> &mut S
+            where S: FromEcsMut<Self> {
                 FromEcsMut::from_ecs_mut(self)
             }
     }
 
     $(
-        impl<'a, F: CreatesEntities> FromEcs<'a, EcsContainer<F>> for $sys_type {
-            fn from_ecs(ecs: &'a EcsContainer<F>) -> &'a $sys_type {
+        impl<F: CreatesEntities> FromEcs<EcsContainer<F>> for $sys_type {
+            fn from_ecs(ecs: &EcsContainer<F>) -> &$sys_type {
                 &ecs.$sys_id
             }
         }
 
-        impl<'a, F : CreatesEntities> FromEcsMut<'a, EcsContainer<F>> for $sys_type {
-            fn from_ecs_mut(ecs: &'a mut EcsContainer<F>) -> &'a mut $sys_type {
+        impl<F : CreatesEntities> FromEcsMut<EcsContainer<F>> for $sys_type {
+            fn from_ecs_mut(ecs: &mut EcsContainer<F>) -> &mut $sys_type {
                 &mut ecs.$sys_id
             }
         }

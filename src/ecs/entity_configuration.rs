@@ -10,8 +10,8 @@ impl<'a, E: 'a + ContainsMutSystem> EntityConfiguration<'a, E> {
         EntityConfiguration { container: container, entity: entity }
     }
 
-    pub fn with_component<C, S: FromEcsMut<'a, E> + IsSystem<C> + 'a>
-    (&'a mut self, component: C) {
+    pub fn with_component<C, S: FromEcsMut<E> + IsSystem<C>>
+    (&mut self, component: C) {
         self.container.get_system_mut::<S>().add_entity(&self.entity, component);
     }
 }

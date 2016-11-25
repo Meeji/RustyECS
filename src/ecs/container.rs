@@ -9,22 +9,22 @@ create_container(
 
 */
 
-pub trait FromEcs<'a, E: ContainsSystem> where Self: Sized {
-    fn from_ecs(ecs: &'a E) -> &'a Self;
+pub trait FromEcs<E: ContainsSystem> where Self: Sized {
+    fn from_ecs(ecs: &E) -> &Self;
 }
 
-pub trait FromEcsMut<'a, E: ContainsMutSystem>: FromEcs<'a, E> {
-    fn from_ecs_mut(ecs: &'a mut E) -> &'a mut Self;
+pub trait FromEcsMut<E: ContainsMutSystem>: FromEcs<E> {
+    fn from_ecs_mut(ecs: &mut E) -> &mut Self;
 }
 
 pub trait ContainsSystem where Self: Sized {
-    fn get_system<'a, S>(&'a self) -> &'a S
-        where S: FromEcs<'a, Self>;
+    fn get_system<S>(&self) -> &S
+        where S: FromEcs<Self>;
 }
 
 pub trait ContainsMutSystem: ContainsSystem {
-    fn get_system_mut<'a, S>(&'a mut self) -> &'a mut S
-        where S: FromEcsMut<'a, Self>;
+    fn get_system_mut<S>(&mut self) -> &mut S
+        where S: FromEcsMut<Self>;
 }
 
 
