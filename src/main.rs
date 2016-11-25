@@ -68,13 +68,11 @@ fn main() {
         entity_factory: EntityFactory::new()
      };
 
-    // Create entity, system and ECS container
-    let geralt: Entity = container.new_entity().into();
-
-    // Association component with entity in system
-    // container.get_system_mut().add_entity(&geralt, HasName::new("Geralt"));
-    container.get_system_mut::<System<HasName>>().add_entity(&geralt, HasName::new("Geralt"));
-    container.get_system_mut::<System<HasHealth>>().add_entity(&geralt, HasHealth::new(100));
+    // Create entity, and configure components
+    let geralt: Entity = container.new_entity()
+        .with_component::<HasName, System<HasName>>(HasName::new("Geralt"))
+        .with_component::<HasHealth, System<HasHealth>>(HasHealth::new(100))
+        .into();
 
     // Print Geralt's ID.
     println!("Geralt ID: {:?}", geralt.get_id());
