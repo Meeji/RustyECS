@@ -17,7 +17,7 @@ pub trait ContainsMutSystem: ContainsSystem {
 }
 
 
-#[macro_export]
+//#[macro_export]
 macro_rules! create_container {
     (with_systems {
         $($sys_id:ident => $sys_type:ty = $cmp_type:ty),+
@@ -63,6 +63,12 @@ macro_rules! create_container {
         impl<F : CreatesEntities> FromEcsMut<EcsContainer<F>> for $sys_type {
             fn from_ecs_mut(ecs: &mut EcsContainer<F>) -> &mut $sys_type {
                 &mut ecs.$sys_id
+            }
+        }
+
+        impl<'a, F: CreatesEntities> ConfiguresComponent<$cmp_type> for EntityConfiguration<'a, EcsContainer<F>> {
+            fn with_component(self, component: $cmp_type) -> Self {
+                self.with_component::<$cmp_type, $sys_type>(component)
             }
         }
     )+)
