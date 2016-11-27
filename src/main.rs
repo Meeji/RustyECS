@@ -28,7 +28,8 @@ fn main() {
     println!("Geralt ID: {:?}", geralt.get_id());
 
     // Make sure Geralt is retrievable from system
-    println!("{:?} - {:?}",
+    println!("{:?} - {:?}, {:?}",
         container.has_name.has_component(&geralt),
-        container.has_name.get_component(&geralt).unwrap().name);
+        container.has_name.get_component(&geralt).unwrap().name,
+        container.has_health.get_component(&geralt).unwrap().health);
 }
