@@ -1,5 +1,9 @@
 use ecs::*;
 
+pub trait ConfiguresComponent<C> {
+    fn with_component(self, component: C) -> Self;
+}
+
 pub struct EntityConfiguration<'a, E: 'a + ContainsMutSystem> {
     container: &'a mut E,
     entity: Entity
