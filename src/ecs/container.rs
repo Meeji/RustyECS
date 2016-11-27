@@ -23,12 +23,16 @@ macro_rules! create_container {
         $($sys_id:ident => $sys_type:ty = $cmp_type:ty),+
     }) => (
 
-    pub struct EcsContainer<F: CreatesEntities> {
-        entity_factory: F,
+    pub trait ConfiguresComponent<C> {
+        fn with_component(self, component: C) -> Self;
+    }
+
+    pub struct EcsContainer {
+        entity_factory: EntityFactory,
         $(pub $sys_id: $sys_type,)+
     }
 
-    impl<F: CreatesEntities> EcsContainer<F> {
+    impl EcsContainer {
         pub fn new_entity(&mut self) -> EntityConfiguration<Self> {
             let entity = self.entity_factory.new_entity();
             self.configure_entity(entity)
@@ -39,14 +43,14 @@ macro_rules! create_container {
         }
     }
 
-    impl<F: CreatesEntities> ContainsSystem for EcsContainer<F> {
+    impl ContainsSystem for EcsContainer {
         fn get_system<S>(&self) -> &S
             where S: FromEcs<Self> {
                 FromEcs::from_ecs(self)
             }
     }
 
-    impl<F : CreatesEntities> ContainsMutSystem for EcsContainer<F> {
+    impl ContainsMutSystem for EcsContainer {
         fn get_system_mut<S>(&mut self) -> &mut S
             where S: FromEcsMut<Self> {
                 FromEcsMut::from_ecs_mut(self)
@@ -54,15 +58,21 @@ macro_rules! create_container {
     }
 
     $(
-        impl<F: CreatesEntities> FromEcs<EcsContainer<F>> for $sys_type {
-            fn from_ecs(ecs: &EcsContainer<F>) -> &$sys_type {
+        impl FromEcs<EcsContainer> for $sys_type {
+            fn from_ecs(ecs: &EcsContainer) -> &$sys_type {
                 &ecs.$sys_id
             }
         }
 
-        impl<F : CreatesEntities> FromEcsMut<EcsContainer<F>> for $sys_type {
-            fn from_ecs_mut(ecs: &mut EcsContainer<F>) -> &mut $sys_type {
+        impl FromEcsMut<EcsContainer> for $sys_type {
+            fn from_ecs_mut(ecs: &mut EcsContainer) -> &mut $sys_type {
                 &mut ecs.$sys_id
+            }
+        }
+
+        impl<'a> ConfiguresComponent<$cmp_type> for EntityConfiguration<'a, EcsContainer> {
+            fn with_component(self, component: $cmp_type) -> Self {
+                self.with_component_for_system::<$cmp_type, $sys_type>(component)
             }
         }
     )+)
