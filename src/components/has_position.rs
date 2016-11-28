@@ -1,6 +1,7 @@
 use custom_container::*;
 use ecs::{Entity, PostUpdater, UpdatesSystem, System, IsSystem, ContainsMutSystem};
 
+#[derive(Debug)]
 pub struct Vector {
     pub x: f64,
     pub y: f64
@@ -12,6 +13,7 @@ impl Vector {
     }
 }
 
+#[derive(Debug)]
 pub struct HasPosition {
     pub position: Vector
 }
