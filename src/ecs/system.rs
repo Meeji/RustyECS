@@ -1,5 +1,6 @@
 use std::collections::{HashMap, HashSet};
-use ecs::entity::*;
+use ecs::entity::{Entity, EntityHashState};
+use ecs::container::ContainsMutSystem;
 
 
 pub trait AssociatesEntities {
@@ -8,12 +9,20 @@ pub trait AssociatesEntities {
     fn remove_entity(&mut self, entity: &Entity) -> bool;
 }
 
-pub trait IsSystem<C> {
+pub trait IsSystem<C>: AssociatesEntities {
     fn add_entity(&mut self, entity: &Entity, component: C) -> bool;
 
     fn has_component(&self, entity: &Entity) -> bool;
 
     fn get_component(&self, entity: &Entity) -> Option<&C>;
+}
+
+pub trait PostUpdater<E: ContainsMutSystem> {
+    fn post_update(self, ecs: &mut E);
+}
+
+pub trait IsUpdatableSystem<C, E: ContainsMutSystem, U: PostUpdater<E>>: IsSystem<C> {
+    fn update(&mut self, ecs: &E, dt: f64) -> U;
 }
 
 pub struct System<C> {
