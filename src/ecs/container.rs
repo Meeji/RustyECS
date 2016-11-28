@@ -1,3 +1,5 @@
+#![macro_use]
+
 pub trait FromEcs<E: ContainsSystem> where Self: Sized {
     fn from_ecs(ecs: &E) -> &Self;
 }
@@ -16,7 +18,6 @@ pub trait ContainsMutSystem: ContainsSystem {
         where S: FromEcsMut<Self>;
 }
 
-
 #[macro_export]
 macro_rules! create_container {
     (with_systems {
@@ -28,7 +29,7 @@ macro_rules! create_container {
     }
 
     pub struct EcsContainer {
-        entity_factory: EntityFactory,
+        pub entity_factory: EntityFactory,
         $(pub $sys_id: $sys_type,)+
     }
 
