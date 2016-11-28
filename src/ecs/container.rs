@@ -19,10 +19,14 @@ pub trait ContainsMutSystem: ContainsSystem {
 }
 
 #[macro_export]
-macro_rules! create_container {
-    (with_systems {
+macro_rules! create_container {(
+    with_systems {
         $($sys_id:ident => $sys_type:ty = $cmp_type:ty),+
-    }) => (
+    },
+    with_updaters {
+        $($upd_id:ident updates $upd_sys_id:ident => $upd_type:ty),+
+    }
+) => (
 
     pub trait ConfiguresComponent<C> {
         fn with_component(self, component: C) -> Self;
@@ -31,6 +35,7 @@ macro_rules! create_container {
     pub struct EcsContainer {
         pub entity_factory: EntityFactory,
         $(pub $sys_id: $sys_type,)+
+        $(pub $upd_id: $upd_type,)+
     }
 
     impl EcsContainer {
@@ -41,6 +46,15 @@ macro_rules! create_container {
 
         pub fn configure_entity(&mut self, entity: Entity) -> EntityConfiguration<Self> {
             EntityConfiguration::new(self, entity)
+        }
+
+        pub fn update(&mut self, dt: f64) {
+            $(
+                {
+                    let res = self.$upd_id.update(&self.$upd_sys_id, &self, dt);
+                    res.post_update(self);
+                }
+            )+
         }
     }
 

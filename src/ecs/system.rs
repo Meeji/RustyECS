@@ -19,11 +19,11 @@ pub trait IsSystem<C>: AssociatesEntities {
 }
 
 pub trait PostUpdater<C, S: IsSystem<C>, E: ContainsMutSystem> {
-    fn post_update(self, system: &mut S, ecs: &mut E);
+    fn post_update(self, ecs: &mut E);
 }
 
 pub trait UpdatesSystem<C, S: IsSystem<C>, E: ContainsMutSystem, U: PostUpdater<C, S, E>> {
-    fn update(&mut self, system: &S, ecs: &E, dt: f64) -> U;
+    fn update(&self, system: &S, ecs: &E, dt: f64) -> U;
 }
 
 pub struct System<C> {
