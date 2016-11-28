@@ -14,6 +14,8 @@ pub trait IsSystem<C>: AssociatesEntities {
     fn has_component(&self, entity: &Entity) -> bool;
 
     fn get_component(&self, entity: &Entity) -> Option<&C>;
+
+    fn get_component_mut(&mut self, entity: &Entity) -> Option<&mut C>;
 }
 
 pub trait PostUpdater<C, S: IsSystem<C>, E: ContainsMutSystem> {
@@ -21,7 +23,7 @@ pub trait PostUpdater<C, S: IsSystem<C>, E: ContainsMutSystem> {
 }
 
 pub trait UpdatesSystem<C, S: IsSystem<C>, E: ContainsMutSystem, U: PostUpdater<C, S, E>> {
-    fn update(&mut self, system: &C, ecs: &E, dt: f64) -> U;
+    fn update(&mut self, system: &S, ecs: &E, dt: f64) -> U;
 }
 
 pub struct System<C> {
@@ -55,6 +57,10 @@ impl<C> IsSystem<C> for System<C> {
 
     fn get_component(&self, entity: &Entity) -> Option<&C> {
         self.map.get(entity)
+    }
+
+    fn get_component_mut(&mut self, entity: &Entity) -> Option<&mut C> {
+        self.map.get_mut(entity)
     }
 }
 

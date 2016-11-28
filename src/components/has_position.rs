@@ -1,5 +1,5 @@
 use custom_container::*;
-use ecs::{PostUpdater, UpdatesSystem, System};
+use ecs::{Entity, PostUpdater, UpdatesSystem, System, IsSystem};
 
 pub struct Vector {
     pub x: f64,
@@ -32,17 +32,20 @@ impl PositionUpdater {
     }
 }
 
-//impl<C, S: IsSystem<C>, E: ContainsMutSystem, U: PostUpdater<C, S, E>> UpdatesSystem for PositionUpdater {
-//    fn update(&mut self, system: &C, ecs: &E, dt: f64) -> U;
-//}
-/*
+impl UpdatesSystem<HasPosition, System<HasPosition>, EcsContainer, PositionPostUpdater> for PositionUpdater {
+    fn update(&mut self, _: &System<HasPosition>, _: &EcsContainer, _: f64) -> PositionPostUpdater {
+        PositionPostUpdater {
+            new_position: (Entity::new(1), Vector::new(5.0, 5.0))
+        }
+    }
+}
+
 pub struct PositionPostUpdater {
-    pub new_position: Vector
+    pub new_position: (Entity, Vector)
 }
 
 impl PostUpdater<HasPosition, System<HasPosition>, EcsContainer> for PositionPostUpdater {
-    fn post_update(self, system: &mut S, ecs: &mut E) {
-        system.position = self.new_position;
+    fn post_update(self, system: &mut System<HasPosition>, _: &mut EcsContainer) {
+        system.get_component_mut(&self.new_position.0).unwrap().position = self.new_position.1;
     }
 }
-*/
