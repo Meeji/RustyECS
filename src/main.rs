@@ -6,11 +6,12 @@ use something::components::*;
 use something::custom_container::{EcsContainer, ConfiguresComponent};
 
 fn main() {
+    // Create container
     let mut container = EcsContainer {
         has_name: System::new(),
         has_health: System::new(),
         has_position: System::new(),
-        position_updater: PositionUpdater::new(Vector::new(5.0, 5.0)),
+        position_updater: PositionUpdater::new(),
         entity_factory: EntityFactory::new()
      };
 

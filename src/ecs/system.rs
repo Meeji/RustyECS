@@ -1,4 +1,4 @@
-use std::collections::{HashMap, HashSet};
+use std::collections::HashMap;
 use ecs::entity::{Entity, EntityHashState};
 use ecs::container::ContainsMutSystem;
 
@@ -27,52 +27,48 @@ pub trait UpdatesSystem<C, S: IsSystem<C>, E: ContainsMutSystem, U: PostUpdater<
 }
 
 pub struct System<C> {
-    entities: HashSet<Entity, EntityHashState>,
-    map: HashMap<Entity, C, EntityHashState>
+    entity_components: HashMap<Entity, C, EntityHashState>
 }
 
 impl<C> System<C> {
     pub fn new() -> System<C> {
         System {
-            map: HashMap::with_hasher(EntityHashState),
-            entities: HashSet::with_hasher(EntityHashState)
+            entity_components: HashMap::with_hasher(EntityHashState),
         }
     }
 }
 
 impl<C> IsSystem<C> for System<C> {
     fn has_component(&self, entity: &Entity) -> bool {
-        self.map.contains_key(entity)
+        self.entity_components.contains_key(entity)
     }
 
     fn add_entity(&mut self, entity: &Entity, component: C) -> bool {
-        if self.map.contains_key(entity) {
+        if self.entity_components.contains_key(entity) {
             false
         } else {
-            self.map.insert(*entity, component);
-            self.entities.insert(*entity);
+            self.entity_components.insert(*entity, component);
             true
         }
     }
 
     fn get_component(&self, entity: &Entity) -> Option<&C> {
-        self.map.get(entity)
+        self.entity_components.get(entity)
     }
 
     fn get_component_mut(&mut self, entity: &Entity) -> Option<&mut C> {
-        self.map.get_mut(entity)
+        self.entity_components.get_mut(entity)
     }
 }
 
 impl<C> AssociatesEntities for System<C> {
     fn has_entity(&self, entity: &Entity) -> bool {
-        self.entities.contains(entity)
+        self.entity_components.contains_key(entity)
     }
 
     fn remove_entity(&mut self, entity: &Entity) -> bool {
-        if self.entities.contains(entity) {
-            self.map.remove(entity);
-            self.entities.remove(entity);
+        if self.entity_components.contains_key(entity) {
+            self.entity_components.remove(entity);
             true
         } else { false }
     }

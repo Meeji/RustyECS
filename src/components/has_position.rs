@@ -1,3 +1,4 @@
+use std::ops::Add;
 use custom_container::*;
 use ecs::{Entity, PostUpdater, UpdatesSystem, System, IsSystem, ContainsMutSystem};
 
@@ -13,6 +14,15 @@ impl Vector {
     }
 }
 
+impl Add for Vector {
+    type Output = Vector;
+
+    fn add(self, other: Vector) -> Vector {
+        Vector::new(self.x + other.x, self.y + other.y)
+    }
+}
+
+
 #[derive(Debug)]
 pub struct HasPosition {
     pub position: Vector
@@ -24,20 +34,20 @@ impl HasPosition {
     }
 }
 
-pub struct PositionUpdater {
-    pub movement: Vector
-}
+pub struct PositionUpdater;
 
 impl PositionUpdater {
-    pub fn new(movement: Vector) -> PositionUpdater {
-        PositionUpdater { movement: movement }
-    }
+    pub fn new() -> PositionUpdater { PositionUpdater }
+}
+
+impl Default for PositionUpdater {
+    fn default() -> PositionUpdater { PositionUpdater::new() }
 }
 
 impl UpdatesSystem<HasPosition, System<HasPosition>, EcsContainer, PositionPostUpdater> for PositionUpdater {
-    fn update(&self, _: &System<HasPosition>, _: &EcsContainer, _: f64) -> PositionPostUpdater {
+    fn update(&self, _: &System<HasPosition>, _: &EcsContainer, dt: f64) -> PositionPostUpdater {
         PositionPostUpdater {
-            new_position: (Entity::new(1), Vector::new(5.0, 5.0))
+            new_position: (Entity::new(1), Vector::new(dt, dt))
         }
     }
 }
