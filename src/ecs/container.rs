@@ -27,7 +27,6 @@ macro_rules! create_container {(
         $($upd_id:ident updates $upd_sys_id:ident => $upd_type:ty),+
     }
 ) => (
-
     pub trait ConfiguresComponent<C> {
         fn with_component(self, component: C) -> Self;
     }
@@ -49,12 +48,10 @@ macro_rules! create_container {(
         }
 
         pub fn update(&mut self, dt: f64) {
-            $(
-                {
-                    let res = self.$upd_id.update(&self.$upd_sys_id, &self, dt);
-                    res.post_update(self);
-                }
-            )+
+            $({
+                let res = self.$upd_id.update(&self.$upd_sys_id, &self, dt);
+                res.post_update(self);
+            })+
         }
     }
 
@@ -90,5 +87,5 @@ macro_rules! create_container {(
                 self.with_component_for_system::<$cmp_type, $sys_type>(component)
             }
         }
-    )+)
-}
+    )+
+)}

@@ -8,6 +8,12 @@ pub trait AssociatesEntities {
     fn remove_entity(&mut self, entity: &Entity) -> bool;
 }
 
+pub trait HasSystem<C, S: IsSystem<C>> {
+    fn get_system(&self) -> &S;
+
+    fn get_mut_system(&mut self) -> &mut S;
+}
+
 pub trait IsSystem<C>: AssociatesEntities {
     fn add_entity(&mut self, entity: &Entity, component: C) -> bool;
 
