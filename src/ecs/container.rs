@@ -49,8 +49,8 @@ macro_rules! create_container {(
 
         pub fn update(&mut self, dt: f64) {
             $({
-                let res = self.$upd_id.update(&self.$upd_sys_id, &self, dt);
-                res.post_update(self);
+                let updater = self.$upd_id;
+                updater.update(&mut self, dt);
             })+
         }
     }

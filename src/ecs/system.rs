@@ -24,12 +24,8 @@ pub trait IsSystem<C>: AssociatesEntities {
     fn get_component_mut(&mut self, entity: &Entity) -> Option<&mut C>;
 }
 
-pub trait PostUpdater<C, S: IsSystem<C>, E: ContainsMutSystem> {
-    fn post_update(self, ecs: &mut E);
-}
-
-pub trait UpdatesSystem<C, S: IsSystem<C>, E: ContainsMutSystem, U: PostUpdater<C, S, E>> {
-    fn update(&self, system: &S, ecs: &E, dt: f64) -> U;
+pub trait UpdatesEcs<E: ContainsMutSystem> {
+    fn update(&self, ecs: &mut E, dt: f64);
 }
 
 pub struct System<C> {
