@@ -72,13 +72,13 @@ macro_rules! create_container {(
     $(
         impl FromEcs<EcsContainer> for $sys_type {
             fn from_ecs(ecs: &EcsContainer) -> &$sys_type {
-                &ecs.$sys_id
+                ecs.$sys_id.get_system()
             }
         }
 
         impl FromEcsMut<EcsContainer> for $sys_type {
             fn from_ecs_mut(ecs: &mut EcsContainer) -> &mut $sys_type {
-                &mut ecs.$sys_id
+                ecs.$sys_id.get_system_mut()
             }
         }
 
