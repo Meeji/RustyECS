@@ -20,6 +20,7 @@ pub trait ContainsMutSystem: ContainsSystem {
 
 #[macro_export]
 macro_rules! create_container {(
+    name: $ecs_id:ident,
     with_systems {
         $($sys_id:ident => $sys_type:ty = $cmp_type:ty),+
     },
@@ -39,7 +40,7 @@ macro_rules! create_container {(
         $(pub $upd_id: $upd_type,)+
     }
 
-    pub struct EcsContainer {
+    pub struct $ecs_id {
         pub entity_factory: EntityFactory,
         pub systems: SystemContainer,
         pub updaters: UpdaterContainer,
