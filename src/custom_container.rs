@@ -13,6 +13,6 @@ create_container!(
     // Adds fields for updaters. Syntax is 'field_name updater system_field_name => UpdaterType'
     // Updaters will be called when EcsContainer.updater(dt: f64) is called
     with_updaters {
-         position_updater updates has_position => PositionUpdater
+         position_updater => PositionUpdater
     }
 );

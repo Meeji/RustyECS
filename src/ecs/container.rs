@@ -24,7 +24,7 @@ macro_rules! create_container {(
         $($sys_id:ident => $sys_type:ty = $cmp_type:ty),+
     },
     with_updaters {
-        $($upd_id:ident updates $upd_sys_id:ident => $upd_type:ty),+
+        $($upd_id:ident => $upd_type:ty),+
     }
 ) => (
     pub trait ConfiguresComponent<C> {
