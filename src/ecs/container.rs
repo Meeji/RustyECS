@@ -49,8 +49,8 @@ macro_rules! create_container {(
 
         pub fn update(&mut self, dt: f64) {
             $({
-                let updater = self.$upd_id;
-                updater.update(&mut self, dt);
+                let ref mut updater = self.$upd_id;
+                // updater.update(self, dt);
             })+
         }
     }

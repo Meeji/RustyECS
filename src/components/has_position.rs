@@ -22,7 +22,6 @@ impl Add for Vector {
     }
 }
 
-
 #[derive(Debug)]
 pub struct HasPosition {
     pub position: Vector
@@ -42,18 +41,6 @@ impl PositionUpdater {
 
 impl Default for PositionUpdater {
     fn default() -> PositionUpdater { PositionUpdater::new() }
-}
-
-impl UpdatesSystem<HasPosition, System<HasPosition>, EcsContainer, PositionPostUpdater> for PositionUpdater {
-    fn update(&self, _: &System<HasPosition>, _: &EcsContainer, dt: f64) -> PositionPostUpdater {
-        PositionPostUpdater {
-            new_position: (Entity::new(1), Vector::new(dt, dt))
-        }
-    }
-}
-
-pub struct PositionPostUpdater {
-    pub new_position: (Entity, Vector)
 }
 
 impl UpdatesEcs<EcsContainer> for PositionUpdater {
