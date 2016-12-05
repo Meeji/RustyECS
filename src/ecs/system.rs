@@ -2,6 +2,14 @@ use std::collections::HashMap;
 use ecs::entity::{Entity, EntityHashState};
 use ecs::container::ContainsMutSystem;
 
+pub trait HasSystemContainer {
+    type container: ContainsMutSystem;
+
+    fn get_systems(&self) -> &Self::container;
+
+    fn get_systems_mut(&mut self) -> &mut Self::container;
+}
+
 pub trait AssociatesEntities {
     fn has_entity(&self, entity: &Entity) -> bool;
 
@@ -24,8 +32,8 @@ pub trait IsSystem<C>: AssociatesEntities {
     fn get_component_mut(&mut self, entity: &Entity) -> Option<&mut C>;
 }
 
-pub trait UpdatesEcs<E: ContainsMutSystem> {
-    fn update(&self, ecs: &mut E, dt: f64);
+pub trait UpdatesEcs<E: HasSystemContainer> {
+    fn update(&self, ecs: &mut E::container, dt: f64);
 }
 
 pub struct System<C> {

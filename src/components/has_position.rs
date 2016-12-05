@@ -44,7 +44,7 @@ impl Default for PositionUpdater {
 }
 
 impl UpdatesEcs<EcsContainer> for PositionUpdater {
-    fn update(&self, ecs: &mut EcsContainer, dt: f64) {
+    fn update(&self, ecs: &mut SystemContainer, dt: f64) {
         let system = ecs.get_system_mut::<System<HasPosition>>();
         system.get_component_mut(&Entity::new(1)).unwrap().position = Vector::new(dt, dt);
     }
